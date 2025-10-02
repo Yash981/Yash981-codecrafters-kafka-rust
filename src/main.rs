@@ -19,13 +19,10 @@ fn main() {
                 let mut header_buf = [0u8; 512];
                 streamm.read_exact(&mut header_buf).unwrap();
                 let correlation_id: i32 = i32::from_be_bytes(header_buf[8..12].try_into().unwrap());
-                let mut response = vec![];
 
-                response.extend_from_slice(&0i32.to_be_bytes());
-                response.extend_from_slice(&correlation_id.to_be_bytes()); // correlation_id
-
-                streamm.write_all(&response).unwrap();
-            }
+                streamm.write_all(&0i32.to_be_bytes()).unwrap();
+                streamm.write_all(&correlation_id.to_be_bytes()).unwrap(); // correlation_id    
+                }
             Err(e) => {
                 println!("error: {}", e);
             }
