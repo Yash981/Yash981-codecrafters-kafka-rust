@@ -12,15 +12,12 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(strm) => {
-                let mut buf = [0u8; 1024];
                 let mut streamm = strm;
-                let _ = streamm.read(&mut buf).unwrap();
-                let response: [u8; 8]   = [
-                    0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x07,
-                ];
-                streamm.write_all(&response).unwrap();
-                println!("accepted new connection");
+                let mut header_buf = [0u8;12];
+                streamm.read_exact(&mut header_buf).unwrap();
+                let correlation_id = i32::from_be_bytes(header_buf[8..12].try_into().unwrap());
+                // streamm.write_all(correlation_id);
+                println!("accepted new connection {}",correlation_id);
             }
             Err(e) => {
                 println!("error: {}", e);
