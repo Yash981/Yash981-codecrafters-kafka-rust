@@ -14,14 +14,13 @@ fn main() {
     //
     for stream in listener.incoming() {
         match stream {
-            Ok(strm) => {
-                let mut streamm = strm;
-                let mut header_buf = [0u8; 512];
-                streamm.read_exact(&mut header_buf).unwrap();
+            Ok(mut strm) => {
+                let mut header_buf = [0; 512];
+                let _ = strm.read(&mut header_buf);
                 let correlation_id: i32 = i32::from_be_bytes(header_buf[8..12].try_into().unwrap());
-
-                streamm.write_all(&0i32.to_be_bytes()).unwrap();
-                streamm.write_all(&correlation_id.to_be_bytes()).unwrap(); // correlation_id    
+                println!("correlation_id: {}",correlation_id);
+                let _ = strm.write_all(&0_i32.to_be_bytes());
+                let _ = strm.write_all(&correlation_id.to_be_bytes());    
                 }
             Err(e) => {
                 println!("error: {}", e);
